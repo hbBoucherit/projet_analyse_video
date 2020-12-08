@@ -1,9 +1,0 @@
-# Image data
-*.png
-*.jpg
-*.jpeg
-*.csv
-*.mp4
-*.mp3
-*.h264
-*.zip
