@@ -7,3 +7,12 @@
 *.mp3
 *.h264
 *.zip
+*.json
+*.pyc
+logs/11-12-2020-19-47-22/checkpoint
+*.v2
+*.data-00000-of-00001
+*.index
+*.profile-empty
+*.pb
+*.gz

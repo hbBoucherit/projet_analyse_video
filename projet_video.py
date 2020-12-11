@@ -21,7 +21,7 @@ class_names = ["Bowl", "CanOfCocaCola", "MilkBottle", "Rice", "Sugar"]
 train_directory = 'DB/train'
 test_directory = 'DB/test'
 
-batch_size = 32
+batch_size = 16
 
 # Data augmentation
 train_datagen = ImageDataGenerator(rescale=1./255,
@@ -32,6 +32,8 @@ train_datagen = ImageDataGenerator(rescale=1./255,
         zoom_range=0.2,
         brightness_range=[0.9,1.0],
         fill_mode="nearest")
+
+
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -51,13 +53,18 @@ test_batches = test_datagen.flow_from_directory(
         color_mode="rgb",
         class_mode='categorical',
         shuffle=False)
+
+found_classes = list(train_batches.class_indices.keys())
+print('Classes Found:', found_classes)
+
+assert all(a == b for a, b in zip(found_classes, class_names)), 'Found classes are different than static classes names'
         
 # Model architecture 
 mobilenet = MobileNetV2(weights = 'imagenet', include_top = True, input_shape=(224,224,3))
 mobilenet.layers.pop()
 
-for layer in mobilenet.layers : 
-    layer.trainable = False 
+# for layer in mobilenet.layers : 
+#     layer.trainable = False 
 
 model = Sequential()
 model.add(mobilenet)
@@ -67,13 +74,12 @@ model.summary()
 # Model training
 num_train = 4736
 num_val = 3568
-num_epoch = 20
+num_epoch = 25
 
 ## Call backs
-timestamp =  datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
+stamped_dir = 'logs/' + datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
 
-checkpoint_dir = 'logs/' + timestamp + '/model_checkpoints'
-
+checkpoint_dir = stamped_dir + '/model_checkpoints'
 model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_dir,
         save_weights_only=True,
@@ -82,7 +88,7 @@ model_checkpoint_callback = ModelCheckpoint(
         save_best_only=True
         )
 
-logdir = "logs/" + timestamp + "/scalars/"
+logdir = stamped_dir + '/scalars/'
 
 tensorboard_callback = TensorBoard(log_dir=logdir)
 
@@ -96,7 +102,7 @@ tensorboard_callback = TensorBoard(log_dir=logdir)
 # lr_callback = LearningRateScheduler(scheduler)
 
 # Confusion matrix callback
-logdir = "logs/" + timestamp + "/image"
+logdir = stamped_dir + '/image'
 file_writer_cm = tf.summary.create_file_writer(logdir + '/cm')
 
 def log_confusion_matrix(epoch, logs):
@@ -119,7 +125,7 @@ def log_confusion_matrix(epoch, logs):
 # Define the per-epoch callback.
 cm_callback = LambdaCallback(on_epoch_end=log_confusion_matrix)
 
-model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.0001, decay=1e-6), metrics=['accuracy', 'mae', 'mse'])
+model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.00001, decay=1e-6), metrics=['accuracy', 'mae', 'mse'])
 model.fit(
         train_batches,
         steps_per_epoch=num_train // batch_size,
@@ -128,7 +134,8 @@ model.fit(
         validation_steps=num_val // batch_size,
         callbacks=[model_checkpoint_callback, tensorboard_callback, cm_callback]
         )
-model.save('logs/' + timestamp + '/model.h5')
+        
+model.save(stamped_dir + '/model.h5')
 
 
 

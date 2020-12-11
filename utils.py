@@ -1,10 +1,14 @@
 import io
 import pandas as pd
 import seaborn as sns
-import tensorflow as tf
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import confusion_matrix
+
+import tensorflow as tf
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
 
 def get_confusion_matrix(y_true, y_pred, class_names, normalize='pred'):
 
@@ -33,3 +37,11 @@ def get_confusion_matrix(y_true, y_pred, class_names, normalize='pred'):
     image = tf.expand_dims(image, 0)
 
     return image
+
+def create_model():
+    mobilenet = MobileNetV2(weights = 'imagenet', include_top = True, input_shape=(224,224,3))
+    mobilenet.layers.pop()
+    model = Sequential()
+    model.add(mobilenet)
+    model.add(Dense(5, activation='softmax', name='predictions'))
+    return model
