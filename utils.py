@@ -39,9 +39,15 @@ def get_confusion_matrix(y_true, y_pred, class_names, normalize='pred'):
     return image
 
 def create_model():
-    mobilenet = MobileNetV2(weights = 'imagenet', include_top = True, input_shape=(224,224,3))
-    mobilenet.layers.pop()
+    
+    # Creating a mobilenet backbone
+    backbone = MobileNetV2(weights = 'imagenet', include_top = True, input_shape=(224,224,3))
+    # Removing the last classification layer to adapt it to our classification problem (5 classes)
+    backbone.layers.pop()
+
+    # Creating a sequatial model with a mobilenetv2 backbone and a dense layer
     model = Sequential()
-    model.add(mobilenet)
+    model.add(backbone)
     model.add(Dense(5, activation='softmax', name='predictions'))
+    
     return model

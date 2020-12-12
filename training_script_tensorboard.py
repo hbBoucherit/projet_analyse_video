@@ -9,7 +9,6 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard, LambdaCallb
 from datetime import datetime
 import numpy as np
 from sklearn.metrics import confusion_matrix
-# from utils import plot_confusion_matrix, plot_to_image
 from utils import get_confusion_matrix
 
 
@@ -57,7 +56,8 @@ test_batches = test_datagen.flow_from_directory(
 found_classes = list(train_batches.class_indices.keys())
 print('Classes Found:', found_classes)
 
-assert all(a == b for a, b in zip(found_classes, class_names)), 'Found classes are different than static classes names'
+assert all(a == b for a, b in zip(found_classes, class_names)), 'Found classes are different than static classes names\
+                                                                please modify class_names in python file'
         
 # Model architecture 
 mobilenet = MobileNetV2(weights = 'imagenet', include_top = True, input_shape=(224,224,3))
@@ -110,10 +110,6 @@ def log_confusion_matrix(epoch, logs):
         y_pred_raw = model.predict(test_batches)
         y_pred = np.argmax(y_pred_raw, axis=1)
         y_true = test_batches.classes
-
-        # y_pred_raw = model.predict(train_batches)
-        # y_pred = np.argmax(y_pred_raw, axis=1)
-        # y_true = train_batches.classes
 
         # Get the confusion
         cm_image = get_confusion_matrix(y_true, y_pred, class_names=class_names, normalize='true')
