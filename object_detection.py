@@ -17,7 +17,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--video_index", type=int)
 index = ap.parse_args().video_index
 
-# first video
+# chosen video
 video_name = os.listdir(videos_dir)[index]
 
 # txt file of boxes 
