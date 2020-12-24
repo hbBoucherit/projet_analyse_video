@@ -16,3 +16,4 @@ logs/11-12-2020-19-47-22/checkpoint
 *.profile-empty
 *.pb
 *.gz
+*.txt

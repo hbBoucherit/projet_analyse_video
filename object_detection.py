@@ -1,0 +1,56 @@
+import os 
+import cv2
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+
+model = load_model('weights/mobilenet_modele.h5')
+
+videos_dir = 'VIDEOS/'
+boxes_dir =  'GT/'
+
+# first video
+video_name = os.listdir(videos_dir)[0]
+
+# txt file of boxes 
+box_name = os.listdir(boxes_dir)[0]
+box = open(boxes_dir + str(box_name))
+
+# class names dictionnary 
+objects_dict = {0 : 'Bowl', 1 : 'CanOfCocaCola', 2 : 'MilkBottle', 3 : 'Rice', 4 : 'Sugar'}
+
+# boxes dictionnary for each frame 
+boxes = {}
+for position, line in enumerate(box) : 
+    if len(line.split()) == 6 :
+        x = int(line.split()[2])
+        y = int(line.split()[3])
+        w = int(line.split()[4])
+        h = int(line.split()[5])
+        boxes[position] = (x, y, w, h)
+        print(x, y, x+w, y+h)
+
+# read video
+position = 1
+cap = cv2.VideoCapture(videos_dir + str(video_name))
+while (cap.isOpened()):
+    ret, frame = cap.read()
+    if ret == False : 
+        break 
+    if position in boxes :
+        x, y , w, h = boxes[position]
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        
+        # cropping the region of interest (detected object)
+        roi = frame[y:y + h, x:x + w]
+        cropped_img =  np.expand_dims(np.expand_dims(cv2.resize(roi, (224, 224)), -1), 0)
+        prediction = model.predict(cropped_img)
+        maxindex = int(np.argmax(prediction))
+        cv2.putText(frame, objects_dict[maxindex], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+
+    cv2.imshow('frame', frame)
+    if cv2.waitKey(100) & 0xFF == ord('q'):
+        break 
+    position += 1
+
+cap.release()
