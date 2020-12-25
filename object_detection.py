@@ -41,7 +41,7 @@ for position, line in enumerate(box) :
         boxes[position] = (x, y, w, h)
 
 # read video
-position = 1
+position = 1 # first frame 
 cap = cv2.VideoCapture(video_path)
 while (cap.isOpened()):
     ret, frame = cap.read()
