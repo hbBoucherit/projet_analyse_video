@@ -12,17 +12,20 @@ model = load_model('weights/mobilenet_modele.h5')
 videos_dir = 'VIDEOS/'
 boxes_dir =  'GT/'
 
-# choose index of displayed video
+# default video displayed if no arguments are passed
+video_path = os.listdir(videos_dir)[0] 
+gt_path = os.listdir(boxes_dir)[0]
+
+# choose name and gt of displayed video
 ap = argparse.ArgumentParser()
-ap.add_argument("--video_index", type=int)
-index = ap.parse_args().video_index
+ap.add_argument("--video_path", default = videos_dir + str(video_path))
+ap.add_argument("--gt_path", default = boxes_dir + str(gt_path))
+video_path = ap.parse_args().video_path
+gt_path = ap.parse_args().gt_path
 
-# chosen video
-video_name = os.listdir(videos_dir)[index]
-
-# txt file of boxes 
-box_name = os.listdir(boxes_dir)[index]
-box = open(boxes_dir + str(box_name))
+# open txt file of boxes 
+box_name = gt_path
+box = open(box_name)
 
 # class names dictionnary 
 objects_dict = {0 : 'Bowl', 1 : 'CanOfCocaCola', 2 : 'MilkBottle', 3 : 'Rice', 4 : 'Sugar'}
@@ -39,7 +42,7 @@ for position, line in enumerate(box) :
 
 # read video
 position = 1
-cap = cv2.VideoCapture(videos_dir + str(video_name))
+cap = cv2.VideoCapture(video_path)
 while (cap.isOpened()):
     ret, frame = cap.read()
     if ret == False : 
