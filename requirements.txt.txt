@@ -1,4 +1,6 @@
 numpy
+argparse
+opencv-python
 tensorflow
 keras
 matplotlib
