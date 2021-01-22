@@ -30,9 +30,10 @@ if __name__ == "__main__":
 
     # default video displayed if no arguments are passed
     # index_video = randint(0,len(os.listdir(videos_dir))-1)
-    # index_video = 17 #good example of can of cocacola (following the reflexive cap)
+    index_video = 17 #good example of can of cocacola (following the reflexive cap)
     # index_video = 18 coca => meh => not good tracking
-    index_video = 50 # very good tracking sugar
+    # index_video = 50 # very good tracking sugar
+    # index_video = len(os.listdir(videos_dir))-1
     video_path = os.listdir(videos_dir)[index_video] 
     gt_path = os.listdir(boxes_dir)[index_video]
 
@@ -57,6 +58,8 @@ if __name__ == "__main__":
     previous_frame = None
 
     tr_ratio = 1
+
+    out = cv2.VideoWriter('example.avi', cv2.VideoWriter_fourcc('M','J','P','G'), 25, (1920,1080))
 
     while (cap.isOpened()):
         ret, frame = cap.read()
@@ -141,14 +144,17 @@ if __name__ == "__main__":
 
             x, y, w, h = [int(e) for e in current_bbox]
 
-            cv2.putText(frame, title, (x, y-30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 1, cv2.LINE_AA)
-            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 1)
+            cv2.putText(frame, title, (x, y-30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3, cv2.LINE_AA)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 3)
 
+        out.write(frame)
         cv2.imshow('frame', frame)
+
         if cv2.waitKey(100) & 0xFF == ord('q'):
             break 
         frame_number += 1
         previous_frame = frame.copy()
-
+    
+    out.release()
     cap.release()
 
