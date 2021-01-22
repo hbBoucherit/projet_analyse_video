@@ -8,13 +8,12 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from pathlib import Path
 
-
 # from tensorflow.keras.applications.mobilenet_v2 import preprocess_input as preprocess
 from tensorflow.keras.applications.vgg16 import preprocess_input as preprocess
 
 from utils.object_tracking_utils import *
 
-# 
+# exploration parameters
 aspect_ratios = [[1,1], [0.7,0.7], [1.2, 1.2]]
 steps =  [0, 0.5, 1, 1.5]
 
@@ -30,10 +29,10 @@ if __name__ == "__main__":
     boxes_dir =  'GT/'
 
     # default video displayed if no arguments are passed
-    index_video = randint(0,len(os.listdir(videos_dir))-1)
+    # index_video = randint(0,len(os.listdir(videos_dir))-1)
     # index_video = 17 #good example of can of cocacola (following the reflexive cap)
     # index_video = 18 coca => meh => not good tracking
-    # index_video = 50 # very good tracking sugar
+    index_video = 50 # very good tracking sugar
     video_path = os.listdir(videos_dir)[index_video] 
     gt_path = os.listdir(boxes_dir)[index_video]
 
@@ -43,6 +42,9 @@ if __name__ == "__main__":
     ap.add_argument("--gt_path", default = boxes_dir + str(gt_path))
     video_path = ap.parse_args().video_path
     gt_path = ap.parse_args().gt_path
+
+    print('Video: ', video_path)
+    print('Ground Truth: ', gt_path)
 
 
     # read video
@@ -120,10 +122,14 @@ if __name__ == "__main__":
                     best_bboxes = candidate_bboxes[best_indexes]
 
                     # weighted average of boxes
-                    avg_bboxes = np.average(best_bboxes, weights=rescaled_weights, axis=0)
+                    # FIXED A better average would be to go to cxcywh coords => average => xywh coords
+                    cxcywh = xywh2cxcywh(best_bboxes)
+                    cxcywh_avg = np.expand_dims(np.average(cxcywh, weights=rescaled_weights, axis=0), axis=0)
+
+                    avg_bbox = cxcywh2xywh(cxcywh_avg)[0]
 
                     # Update current box
-                    current_bbox = squared_boxes(*avg_bboxes)
+                    current_bbox = squared_boxes(*avg_bbox)
                     predictions[frame_number] = current_bbox
 
                 if confidence > 0.5: # Object still tracked

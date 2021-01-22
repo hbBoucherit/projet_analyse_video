@@ -65,7 +65,7 @@ def get_candidate_boxes(box, steps, aspect_ratios, im_width, im_height):
 
 def clip_boxes(boxes, im_width, im_height):
 
-    xyxy_boxes = xywh2xyxy(boxes)
+    xyxy_boxes = cxcywh2xyxy(boxes)
 
     # Clamp boxes outside of the bounding box
     cliped_boxes = np.zeros_like(boxes)
@@ -74,7 +74,7 @@ def clip_boxes(boxes, im_width, im_height):
     cliped_boxes[:,2] =  np.clip(xyxy_boxes[:, 2], a_min=0, a_max=im_width-1)  # x + w
     cliped_boxes[:,3] =  np.clip(xyxy_boxes[:, 3], a_min=0, a_max=im_height-1) # y + h
 
-    new_xywh_boxes = xyxy2xywh(cliped_boxes)
+    new_xywh_boxes = xyxy2cxcywh(cliped_boxes)
     
     # a box is unclamped if all its new coords are equal to the original unclamped coords
     diff_boxes = abs(new_xywh_boxes - boxes) <= 20 
@@ -84,11 +84,7 @@ def clip_boxes(boxes, im_width, im_height):
 
     return boxes[inside]
 
-
-def xyxy2xywh(boxes):
-    """
-    Convert xyxy coordinates to xywh
-    """
+def xyxy2cxcywh(boxes):
     out = np.zeros_like(boxes)
     out[:, 0] = (boxes[:, 0] + boxes[:, 2]) / 2  # x center
     out[:, 1] = (boxes[:, 1] + boxes[:, 3]) / 2  # y center
@@ -96,16 +92,44 @@ def xyxy2xywh(boxes):
     out[:, 3] = boxes[:, 3] - boxes[:, 1]  # height
     return out
 
+def cxcywh2xywh(boxes):
+    out = np.zeros_like(boxes)
+    out[:, 0] = boxes[:, 0] - boxes[:, 2] / 2  # x left
+    out[:, 1] = boxes[:, 1] - boxes[:, 3] / 2  # y top
+    out[:, 2] = boxes[:, 2]  # width
+    out[:, 3] = boxes[:, 3]  # height
+    return out
 
-def xywh2xyxy(boxes):
-    """
-    Convert xywh coordinates to xyxy
-    """
+def cxcywh2xyxy(boxes):
     out = np.zeros_like(boxes)
     out[:, 0] = boxes[:, 0] - boxes[:, 2] / 2  # top left x
     out[:, 1] = boxes[:, 1] - boxes[:, 3] / 2  # top left y
     out[:, 2] = boxes[:, 0] + boxes[:, 2] / 2  # bottom right x
     out[:, 3] = boxes[:, 1] + boxes[:, 3] / 2  # bottom right y
+    return out
+
+def xyxy2xywh(boxes):
+    out = np.zeros_like(boxes)
+    out[:, 0] = boxes[:, 0] # x left
+    out[:, 1] = boxes[:, 1] # y top
+    out[:, 2] = boxes[:, 2] - boxes[:, 0]  # width
+    out[:, 3] = boxes[:, 3] - boxes[:, 1]  # height
+    return out
+
+def xywh2xyxy(boxes):
+    out = np.zeros_like(boxes)
+    out[:, 0] = boxes[:, 0]  # top left x
+    out[:, 1] = boxes[:, 1]  # top left y
+    out[:, 2] = boxes[:, 0] + boxes[:, 2] / 2  # bottom right x
+    out[:, 3] = boxes[:, 1] + boxes[:, 3] / 2  # bottom right y
+    return out
+
+def xywh2cxcywh(boxes):
+    out = np.zeros_like(boxes)
+    out[:, 0] = boxes[:, 0] + boxes[:, 2] / 2
+    out[:, 1] = boxes[:, 1] + boxes[:, 3] / 2
+    out[:, 2] = boxes[:, 2]  
+    out[:, 3] = boxes[:, 3]
     return out
 
 # function that returns squarred bounding boxe based on the original bounding box
