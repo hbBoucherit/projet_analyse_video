@@ -9,7 +9,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard, LambdaCallb
 from datetime import datetime
 import numpy as np
 from sklearn.metrics import confusion_matrix
-from utils import get_confusion_matrix
+from utils.utils import get_confusion_matrix
 
 
 from tensorflow.python.client import device_lib
