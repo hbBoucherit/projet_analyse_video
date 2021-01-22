@@ -31,9 +31,9 @@ In this version, instead of having constant exploration steps. The steps are sca
 
 To calculate the global motion between two frames we used Gunnar Farneback’s algorithm to calculate dense optical flow combined with KMeans clustering to find global motion. We were inspired by this [Tutorial](https://medium.com/roonyx/camera-motion-estimation-using-optical-flow-ce441d7ffec).
 
-### [Object tracking with motion compensation and Box averaging V2.0](object_tracking_motion_compensation_averagingv2.py)
+### [Object tracking with motion compensation and Box averaging V1.0](object_tracking_motion_compensation_averaging.py)
 
-The source code: [object_tracking_motion_compensation_averagingv2.py](object_tracking_motion_compensation_averagingv2.py)
+The source code: [object_tracking_motion_compensation_averaging.py](object_tracking_motion_compensation_averaging.py)
 
 In the previous version of object tracking, we noticed that multiple boxes had a score greater than 0.9 and sometimes equal to 1. This meant that the first box of with maximum confidence was not the best box. Consequently the tracking was not great.
 
@@ -45,7 +45,9 @@ This box was created by averaging the coordinates (x, y) and dimensions (width, 
 
 As a result, we got better tracking with less sensitive to boxes with very good scores.
 
-### [Object tracking with motion compensation and Box averaging V1.0](object_tracking_motion_compensation_averaging.py)
+### [Object tracking with motion compensation and Box averaging V2.0](object_tracking_motion_compensation_averagingv2.py)
+
+The source code: [object_tracking_motion_compensation_averagingv2.py](object_tracking_motion_compensation_averagingv2.py)
 
 In this second version, we tried an even better averaging method.
 
@@ -57,13 +59,13 @@ We modified the way we average the boxes. Previously we used xywh coordinates di
 
 ### Results
 
-[Tracking sugar in plastic bag](examples/sugar_plastic.avi)
+[Tracking sugar in plastic bag](https://drive.google.com/file/d/1naqpvu7qs0XzeDpXXM39d6VvEj2dkNIx/view?usp=sharing)
 
 
-[Tracking sugar in cardboard box](examples/sugar_box.avi)
+[Tracking sugar in cardboard box](https://drive.google.com/file/d/1GlRXBUwFWnJXBWIs20julQ3hp91J6vjZ/view?usp=sharing)
 
 
-[Tracking coca and lost](examples/coca.avi)
+[Tracking coca and lost](https://drive.google.com/file/d/1nSDrQd_O5XC887f5pYh6-hKh3z5B-0fZ/view?usp=sharing)
 
 
 ### Ways to improve tracking
