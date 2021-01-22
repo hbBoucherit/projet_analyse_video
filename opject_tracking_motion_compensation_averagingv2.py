@@ -30,10 +30,10 @@ if __name__ == "__main__":
     boxes_dir =  'GT/'
 
     # default video displayed if no arguments are passed
-    # index_video = randint(0,len(os.listdir(videos_dir))-1)
+    index_video = randint(0,len(os.listdir(videos_dir))-1)
     # index_video = 17 #good example of can of cocacola (following the reflexive cap)
     # index_video = 18 coca => meh => not good tracking
-    index_video = 50 # very good tracking sugar
+    # index_video = 50 # very good tracking sugar
     video_path = os.listdir(videos_dir)[index_video] 
     gt_path = os.listdir(boxes_dir)[index_video]
 
